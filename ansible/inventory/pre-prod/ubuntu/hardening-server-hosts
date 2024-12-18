@@ -1,0 +1,5 @@
+localhost ansible_connection=local
+
+[hardening-server]
+AMKPGF01-pre-prod ansible_ssh_host=192.168.103.92 ansible_ssh_user=amkdevops
+DR-BAK-API01-pre-prod ansible_ssh_host=10.10.7.166 ansible_ssh_user=amkdevops

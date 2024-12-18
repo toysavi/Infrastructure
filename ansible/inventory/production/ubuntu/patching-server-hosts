@@ -1,0 +1,35 @@
+localhost ansible_connection=local
+
+[patching-server]
+DR-BAKPG-02-production ansible_ssh_host=192.168.105.125 ansible_ssh_user=amkdevops
+AMK-BAK-PG01-production ansible_ssh_host=192.168.103.125 ansible_ssh_user=amkdevops
+AMKPGB01-production ansible_ssh_host=192.168.103.91 ansible_ssh_user=amkdevops
+DC-BAK-API01-production ansible_ssh_host=10.10.7.44 ansible_ssh_user=amkdevops
+DC-CBC-APP01-production ansible_ssh_host=192.168.103.88 ansible_ssh_user=amkdevops
+DC-CBC-DB01-production ansible_ssh_host=192.168.103.38 ansible_ssh_user=amkdevops
+DR-NBC-BAK02-production ansible_ssh_host=192.168.105.240 ansible_ssh_user=amkdevops
+DR-NBC-BAK03-production ansible_ssh_host=192.1168.105.241 ansible_ssh_user=amkdevops
+DC-FAST-CM02-production ansible_ssh_host=192.168.103.111 ansible_ssh_user=amkdevops
+DC-FAST-UI01-production ansible_ssh_host=192.168.103.108 ansible_ssh_user=amkdevops
+ITI-IPMG-01-production ansible_ssh_host=192.168.100.244 ansible_ssh_user=amkdevops
+DC-NTP-02-production ansible_ssh_host=192.168.100.207 ansible_ssh_user=amkdevops
+DC-SQU-WEB01-production ansible_ssh_host=192.168.100.200 ansible_ssh_user=amkdevops
+DC-PG-DB02-production ansible_ssh_host=192.168.100.198 ansible_ssh_user=amkdevops
+DC-PG-DB03-production ansible_ssh_host=192.168.100.199 ansible_ssh_user=amkdevops
+DC-MOBSF-MSS01-production ansible_ssh_host=192.168.100.212 ansible_ssh_user=amkdevops
+DC-SQU-MSC01-production ansible_ssh_host=192.168.100.210 ansible_ssh_user=amkdevops
+dc-vas-db01-production ansible_ssh_host=192.168.103.61 ansible_ssh_user=amkdevops
+DR-CBC-DB01-production ansible_ssh_host=192.168.105.38 ansible_ssh_user=amkdevops
+AMK-NBC-BAKDR03-production ansible_ssh_host=192.168.105.241 ansible_ssh_user=amkdevops
+DR-NTP-02-production ansible_ssh_host=192.168.105.207 ansible_ssh_user=amkdevops
+DR-PG-DB02-production ansible_ssh_host=192.168.105.58 ansible_ssh_user=amkdevops
+DR-PG-DB03-production ansible_ssh_host=192.168.105.59 ansible_ssh_user=amkdevops
+dr-vas-db01-production ansible_ssh_host=192.168.105.61 ansible_ssh_user=amkdevops
+DC-AS-APP01-production ansible_ssh_host=192.168.100.233 ansible_ssh_user=amkdevops
+dc-geo-01-production ansible_ssh_host=192.168.103.121 ansible_ssh_user=amkdevops
+dc-elk-app01-production ansible_ssh_host=192.168.103.246 ansible_ssh_user=amkdevops
+dc-fast-cm01-production ansible_ssh_host=192.168.103.109 ansible_ssh_user=amkdevops
+dc-jkin-web01-production ansible_ssh_host=192.168.103.245 ansible_ssh_user=amkdevops
+DC-CATI-01-production ansible_ssh_host=192.168.100.249 ansible_ssh_user=amkdevops
+DR-GEO-01-production ansible_ssh_host=192.168.105.121 ansible_ssh_user=amkdevops
+dc-pag-be01-production ansible_ssh_host=192.168.103.91 ansible_ssh_user=amkdevops

@@ -1,0 +1,6 @@
+localhost ansible_connection=local
+[all:vars]
+# ansible_python_interpreter=/usr/bin/python2
+ansible_python_interpreter="/usr/bin/env python3"
+
+[user-operation]

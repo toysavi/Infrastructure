@@ -1,0 +1,9 @@
+localhost ansible_connection=local
+
+[patching-server:children]
+redhat 
+
+[redhat]
+pg-pre-app01-pre-prod ansible_ssh_host=192.168.100.157 ansible_ssh_user=amkdevops
+DR-API-NGINX1-pre-prod ansible_ssh_host=10.10.7.179 ansible_ssh_user=amkdevops ansible_python_interpreter="/usr/bin/env python2"
+

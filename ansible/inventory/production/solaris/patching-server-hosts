@@ -1,0 +1,61 @@
+localhost ansible_connection=local
+
+[patching-server]
+DC-SWT-ABG01-production ansible_ssh_host=192.168.102.142 ansible_ssh_user=amkdevops
+DC-SWT-FEA01-production ansible_ssh_host=192.168.102.164 ansible_ssh_user=amkdevops ansible_python_interpreter="/usr/bin/python"
+DC-SWT-MPA01-production ansible_ssh_host=192.168.102.178 ansible_ssh_user=amkdevops
+DR-SWT-FEA01-production ansible_ssh_host=192.168.104.164 ansible_ssh_user=amkdevops ansible_python_interpreter="/usr/bin/python"
+DR-SWT-SVB01-production ansible_ssh_host=192.168.104.166 ansible_ssh_user=amkdevops
+DC-CBS-PRS01-production ansible_ssh_host=192.168.102.181 ansible_ssh_user=amkdevops ansible_python_interpreter="/usr/bin/python"
+DC-CBS-PRS03-production ansible_ssh_host=192.168.102.183 ansible_ssh_user=amkdevops ansible_python_interpreter="/usr/bin/python"
+DC-CBS-PRS02-production ansible_ssh_host=192.168.102.182 ansible_ssh_user=amkdevops ansible_python_interpreter="/usr/bin/python"
+DC-SWT-SVB02-production ansible_ssh_host=192.168.102.141 ansible_ssh_user=amkdevops ansible_python_interpreter="/usr/bin/python"
+DR-CBS-PRS01-production ansible_ssh_host=192.168.104.181 ansible_ssh_user=amkdevops ansible_python_interpreter="/usr/bin/python"
+DR-SWT-MPA01-production ansible_ssh_host=192.168.104.178 ansible_ssh_user=amkdevops
+DR-SWT-MB01-production ansible_ssh_host=192.168.124.133 ansible_ssh_user=amkdevops
+DR-SWT-SIMB01-production ansible_ssh_host=192.168.124.13 ansible_ssh_user=amkdevops
+DR-SWT-SVFE01-production ansible_ssh_host=192.168.124.11 ansible_ssh_user=amkdevops
+DR-CBS-PRS02-production ansible_ssh_host=192.168.104.182 ansible_ssh_user=amkdevops ansible_python_interpreter="/usr/bin/env python"
+DC-SWT-SVRB01-production ansible_ssh_host=192.168.124.18 ansible_ssh_user=amkdevops
+DR-SWT-CGD01-production ansible_ssh_host=192.168.138.47 ansible_ssh_user=amkdevops
+DR-SWT-SVBO1-production ansible_ssh_host=192.168.124.15 ansible_ssh_user=amkdevops
+DR-SWT-SVCG02-production ansible_ssh_host=192.168.123.5 ansible_ssh_user=amkdevops
+DR-SWT-SVRB01-production ansible_ssh_host=192.168.124.17 ansible_ssh_user=amkdevops
+DC-SWT-CGD01-production ansible_ssh_host=192.168.138.46 ansible_ssh_user=amkdevops
+DC-SWT-MB01-production ansible_ssh_host=192.168.124.132 ansible_ssh_user=amkdevops
+DC-SWT-SIMB01-production ansible_ssh_host=192.168.124.12 ansible_ssh_user=amkdevops
+DC-SWT-SVBO1-production ansible_ssh_host=192.168.124.14 ansible_ssh_user=amkdevops
+DC-SWT-SVCG01-production ansible_ssh_host=192.168.123.4 ansible_ssh_user=amkdevops
+DC-SWT-SVFE01-production ansible_ssh_host=192.168.124.10 ansible_ssh_user=amkdevops
+DC-SWT-IBD01-production ansible_ssh_host=192.168.140.32 ansible_ssh_user=amkdevops
+DC-SWT-MBD01-production ansible_ssh_host=192.168.140.4 ansible_ssh_user=amkdevops
+DC-SWT-SVB01-production ansible_ssh_host=192.168.102.166 ansible_ssh_user=amkdevops
+DR-SWT-IBD01-production ansible_ssh_host=192.168.140.132 ansible_ssh_user=amkdevops
+DR-SWT-MBD01-production ansible_ssh_host=192.168.140.128 ansible_ssh_user=amkdevops
+DC-SWT-IBD02-production ansible_ssh_host=192.168.140.33 ansible_ssh_user=amkdevops
+DC-SWT-MBD02-production ansible_ssh_host=192.168.140.5 ansible_ssh_user=amkdevops
+DR-DWE-DB01-production ansible_ssh_host=10.10.104.85 ansible_ssh_user=amkdevops ansible_python_interpreter="/usr/bin/env python2"
+DC-CBS-APP02-production ansible_ssh_host=192.168.138.49 ansible_ssh_user=amkdevops ansible_python_interpreter="/usr/bin/python"
+DC-CBS-APP01-production ansible_ssh_host=192.168.138.48 ansible_ssh_user=amkdevops
+CBS-TRN-APP01-production ansible_ssh_host=192.168.138.50 ansible_ssh_user=amkdevops ansible_python_interpreter="/usr/bin/python"
+DC-SWT-MFD01-production ansible_ssh_host=192.168.140.18 ansible_ssh_user=amkdevops
+DC-SWT-MFD02-production ansible_ssh_host=192.168.140.19 ansible_ssh_user=amkdevops
+DC-SWT-BOD01-production ansible_ssh_host=192.168.140.11 ansible_ssh_user=amkdevops
+DC-SWT-BOD02-production ansible_ssh_host=192.168.140.12 ansible_ssh_user=amkdevops
+DC-SWT-FED01-production ansible_ssh_host=192.168.140.25 ansible_ssh_user=amkdevops
+DC-SWT-FED02-production ansible_ssh_host=192.168.140.26 ansible_ssh_user=amkdevops
+DR-CBS-APP02-production ansible_ssh_host=192.168.138.178 ansible_ssh_user=amkdevops ansible_python_interpreter="/usr/bin/env python"
+DR-CBS-APP01-production ansible_ssh_host=192.168.138.177 ansible_ssh_user=amkdevops ansible_python_interpreter="/usr/bin/env python"
+DC-OEM-APP01-production ansible_ssh_host=192.168.120.12 ansible_ssh_user=amkdevops
+DR-SWT-MFD01-production ansible_ssh_host=192.168.140.130 ansible_ssh_user=amkdevops
+DR-SWT-SBD01-production ansible_ssh_host=192.168.140.129 ansible_ssh_user=amkdevops
+DR-SWT-SFD01-production ansible_ssh_host=192.168.140.131 ansible_ssh_user=amkdevops
+DC-DWE-DB01-production ansible_ssh_host=192.168.140.40 ansible_ssh_user=amkdevops
+DR-SWT-ABG01-production ansible_ssh_host=192.168.124.20 ansible_ssh_user=amkdevops
+DC-SWT-ABG01-production ansible_ssh_host=192.168.124.19 ansible_ssh_user=amkdevops
+DC-DWH-DB01-production ansible_ssh_host=192.168.140.39 ansible_ssh_user=amkdevops
+DR-DWH-DB01-production ansible_ssh_host=192.168.140.133 ansible_ssh_user=amkdevops
+DC-CBS-PRS04-production ansible_ssh_host=192.168.102.184 ansible_ssh_user=amkdevops ansible_python_interpreter="/usr/bin/env python"
+DC-CBS-PRS05-production ansible_ssh_host=192.168.102.185 ansible_ssh_user=amkdevops ansible_python_interpreter="/usr/bin/env python"
+DC-CBS-APP04-production ansible_ssh_host=192.168.138.51 ansible_ssh_user=amkdevops ansible_python_interpreter="/usr/bin/env python"
+DC-CBS-APP05-production ansible_ssh_host=192.168.138.52 ansible_ssh_user=amkdevops ansible_python_interpreter="/usr/bin/env python"
