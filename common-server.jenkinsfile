@@ -1,105 +1,101 @@
 pipeline {
     agent { label 'master' }
     environment {
-        TELEGRAM_BOT_TOKEN = credentials('Telegram_Bot_Token') // Add in Jenkins credentials
-        TELEGRAM_GROUP_ID  = credentials('Telegram_Group_ID')  // Add in Jenkins credentials
+        TELEGRAM_BOT_TOKEN = credentials('Telegram_Bot_Token') // Telegram Bot Token from Jenkins credentials
+        TELEGRAM_GROUP_ID  = credentials('Telegram_Group_ID')  // Telegram Group ID from Jenkins credentials
     }
     parameters {
-        choice(name: 'OS',  choices: ['','ubuntu','redhat','solaris'], description: 'Please choose OS')
+        choice(name: 'OS',  choices: ['','ubuntu','redhat','solaris'], description: 'Please choose the operating system')
         string(name: 'Server_Name', defaultValue: '', description: 'Enter the server name')
         string(name: 'IP_Address', defaultValue: '', description: 'Enter the IP address')
         string(name: 'UserName', defaultValue: '', description: 'Enter the username')
-        password(name: 'Password', defaultValue: '', description: 'Please input the new password')
-        choice(name: 'ENV',  choices: ['','pre-prod','uat','production'], description: 'Please choose Environment')
-        booleanParam(name: 'Git', defaultValue: false, description: 'Select to Install Git')
-        booleanParam(name: 'Docker', defaultValue: false, description: 'Select to Install Docker')
-        booleanParam(name: 'Apache', defaultValue: false, description: 'Select to Install Apache')
-        booleanParam(name: 'Nginx', defaultValue: false, description: 'Select to Install Nginx')
-        booleanParam(name: 'Jboss', defaultValue: false, description: 'Select to Install Jboss')
-        booleanParam(name: 'Java', defaultValue: false, description: 'Select to Install Java')
+        password(name: 'Password', defaultValue: '', description: 'Enter the new password')
+        choice(name: 'ENV',  choices: ['','pre-prod','uat','production'], description: 'Please choose the environment')
+        booleanParam(name: 'Git', defaultValue: false, description: 'Select to install Git')
+        booleanParam(name: 'Docker', defaultValue: false, description: 'Select to install Docker')
+        booleanParam(name: 'Apache', defaultValue: false, description: 'Select to install Apache')
+        booleanParam(name: 'Nginx', defaultValue: false, description: 'Select to install Nginx')
+        booleanParam(name: 'Jboss', defaultValue: false, description: 'Select to install Jboss')
+        booleanParam(name: 'Java', defaultValue: false, description: 'Select to install Java')
     }
     stages {
-        stage('Initialization') {
-            steps {
-                echo "Starting the pipeline..."
-                echo "Build ID: ${env.BUILD_ID}"
-                echo "Selected OS: ${params.OS}"
-                echo "Environment: ${params.ENV}"
-                echo "Server Name: ${params.Server_Name}"
-                echo "IP Address: ${params.IP_Address}"
-                echo "Username: ${params.UserName}"
-            }
-        }
-        stage('Installations') {
+        stage('Custom Host') {
             steps {
                 script {
-                    if (params.Git) {
-                        echo "Installing Git..."
-                        // Add Git installation logic here
-                    }
-                    if (params.Docker) {
-                        echo "Installing Docker..."
-                        // Add Docker installation logic here
-                    }
-                    if (params.Apache) {
-                        echo "Installing Apache..."
-                        // Add Apache installation logic here
-                    }
-                    if (params.Nginx) {
-                        echo "Installing Nginx..."
-                        // Add Nginx installation logic here
-                    }
-                    if (params.Jboss) {
-                        echo "Installing Jboss..."
-                        // Add Jboss installation logic here
-                    }
-                    if (params.Java) {
-                        echo "Installing Java..."
-                        // Add Java installation logic here
+                    withCredentials([password(credentialsId: 'Password', variable: 'PASSWORD')]) {
+                        sh """#!/bin/sh -l
+                            ansible-playbook ansible/custom-host.yml \
+                                             -i ansible/inventory/${ENV}/hosts \
+                                             -e ENV=${ENV} \
+                                             -e password=${PASSWORD} \
+                                             -e server_ip=${IP_Address} \
+                                             -e user=${UserName} \
+                                             -e workspace=${WORKSPACE}
+                        """
                     }
                 }
             }
         }
-        stage('Create Notification File') {
+        stage('Configure Common Server') {
             steps {
                 script {
-                    def notificationContent = """
-                    Build Summary:
-                    Build ID: ${env.BUILD_ID}
-                    OS: ${params.OS}
-                    Environment: ${params.ENV}
-                    Server Name: ${params.Server_Name}
-                    IP Address: ${params.IP_Address}
-                    Selected Installations:
-                        Git: ${params.Git}
-                        Docker: ${params.Docker}
-                        Apache: ${params.Apache}
-                        Nginx: ${params.Nginx}
-                        Jboss: ${params.Jboss}
-                        Java: ${params.Java}
-                    """
-                    writeFile file: 'build_summary.txt', text: notificationContent
+                    withCredentials([password(credentialsId: 'Password', variable: 'PASSWORD')]) {
+                        sh """#!/bin/sh -l
+                            ansible-playbook ansible/common-server.yml \
+                                            -i ansible/inventory/${ENV}/custom-hosts \
+                                            -e "ansible_sudo_pass=${PASSWORD}" \
+                                            -e docker=${Docker} \
+                                            -e git=${Git} \
+                                            -e nginx=${Nginx} \
+                                            -e apache=${Apache} \
+                                            -e jboss=${Jboss} \
+                                            -e java=${Java} | tee -a result-logs-${BUILD_NUMBER}.txt
+                            echo "OS: ${OS}" > common-server-result-${BUILD_NUMBER}.txt
+                            echo "Environment: ${ENV}" >> common-server-result-${BUILD_NUMBER}.txt
+                            echo "Server Name: ${Server_Name}" >> common-server-result-${BUILD_NUMBER}.txt
+                            echo "IP Address: ${IP_Address}" >> common-server-result-${BUILD_NUMBER}.txt
+                            grep -A99 "PLAY RECAP" result-logs-${BUILD_NUMBER}.txt >> common-server-result-${BUILD_NUMBER}.txt
+                        """
+                        // Send result logs and reports to Telegram
+                        sh """
+                            curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendDocument" \
+                            -F chat_id=${TELEGRAM_GROUP_ID} \
+                            -F document=@${WORKSPACE}/result-logs-${BUILD_NUMBER}.txt \
+                            -F caption="Result Logs Report for Build #${BUILD_NUMBER}"
+                        """
+                        sh """
+                            curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendDocument" \
+                            -F chat_id=${TELEGRAM_GROUP_ID} \
+                            -F document=@${WORKSPACE}/common-server-result-${BUILD_NUMBER}.txt \
+                            -F caption="Result Report for Build #${BUILD_NUMBER}"
+                        """
+                    }
                 }
             }
         }
-        stage('Send Notification') {
+        stage('Add Host') {
             steps {
                 script {
-                    sh """
-                    curl -F chat_id=${env.TELEGRAM_GROUP_ID} \
-                         -F document=@build_summary.txt \
-                         -X POST https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendDocument
-                    """
+                    withCredentials([password(credentialsId: 'Password', variable: 'PASSWORD')]) {
+                        sh """#!/bin/sh -l
+                            ansible-playbook ansible/add-host.yml \
+                                             -i ansible/inventory/${ENV}/hosts \
+                                             -e ENV=${ENV} \
+                                             -e OS=${OS} \
+                                             -e server_name=${Server_Name} \
+                                             -e server_ip=${IP_Address} \
+                                             -e user=${UserName} \
+                                             -e password=${PASSWORD} \
+                                             -e workspace=${WORKSPACE}
+                        """
+                    }
                 }
             }
         }
     }
     post {
-        success {
-            echo "Pipeline executed successfully. Build ID: ${env.BUILD_ID}"
-        }
-        failure {
-            echo "Pipeline execution failed. Build ID: ${env.BUILD_ID}"
+        always {
+            echo "Pipeline execution completed."
         }
     }
 }
