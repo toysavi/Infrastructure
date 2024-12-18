@@ -22,6 +22,7 @@ pipeline {
         stage('Initialization') {
             steps {
                 echo "Starting the pipeline..."
+                echo "Build ID: ${env.BUILD_ID}"
                 echo "Selected OS: ${params.OS}"
                 echo "Environment: ${params.ENV}"
                 echo "Server Name: ${params.Server_Name}"
@@ -59,11 +60,12 @@ pipeline {
                 }
             }
         }
-        stage('Notification') {
+        stage('Create Notification File') {
             steps {
                 script {
-                    def message = """
-                    Build Completed:
+                    def notificationContent = """
+                    Build Summary:
+                    Build ID: ${env.BUILD_ID}
                     OS: ${params.OS}
                     Environment: ${params.ENV}
                     Server Name: ${params.Server_Name}
@@ -76,10 +78,17 @@ pipeline {
                         Jboss: ${params.Jboss}
                         Java: ${params.Java}
                     """
+                    writeFile file: 'build_summary.txt', text: notificationContent
+                }
+            }
+        }
+        stage('Send Notification') {
+            steps {
+                script {
                     sh """
-                    curl -s -X POST https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage \
-                        -d chat_id=${env.TELEGRAM_GROUP_ID} \
-                        -d text="${message}"
+                    curl -F chat_id=${env.TELEGRAM_GROUP_ID} \
+                         -F document=@build_summary.txt \
+                         -X POST https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendDocument
                     """
                 }
             }
@@ -87,10 +96,10 @@ pipeline {
     }
     post {
         success {
-            echo "Pipeline executed successfully."
+            echo "Pipeline executed successfully. Build ID: ${env.BUILD_ID}"
         }
         failure {
-            echo "Pipeline execution failed."
+            echo "Pipeline execution failed. Build ID: ${env.BUILD_ID}"
         }
     }
 }
