@@ -1,0 +1,96 @@
+pipeline {
+    agent { label 'master' }
+    environment {
+        TELEGRAM_BOT_TOKEN = credentials('Telegram_Bot_Token') // Add in Jenkins credentials
+        TELEGRAM_GROUP_ID  = credentials('Telegram_Group_ID')  // Add in Jenkins credentials
+    }
+    parameters {
+        choice(name: 'OS',  choices: ['','ubuntu','redhat','solaris'], description: 'Pls choose OS')
+        string(name: 'Server_Name', defaultValue: '', description: '')
+        string(name: 'IP_Address', defaultValue: '', description: '')
+        string(name: 'UserName', defaultValue: '', description: '')
+        password(name: 'Password', defaultValue: '', description: 'Please input new password')
+        choice(name: 'ENV',  choices: ['','pre-prod','uat','production'], description: 'Pls choose Environment')
+        booleanParam(name: 'Git', defaultValue: false, description: 'Select to Install Git')
+        booleanParam(name: 'Docker', defaultValue: false, description: 'Select to Install Docker')
+        booleanParam(name: 'Apache', defaultValue: false, description: 'Select to Install Apache')
+        booleanParam(name: 'Nginx', defaultValue: false, description: 'Select to Install Nginx')
+        booleanParam(name: 'Jboss', defaultValue: false, description: 'Select to Install Jboss')
+        booleanParam(name: 'Java', defaultValue: false, description: 'Select to Install Java')
+    }
+    stages {
+        stage ('Custom Host') {
+            steps {
+                script {
+                    withCredentials([password(credentialsId: 'Password', variable: 'PASSWORD')]) {
+                        sh """#!/bin/sh -l
+                            ansible-playbook ansible/custom-host.yml \
+                                             -i ansible/inventory/${ENV}/hosts \
+                                             -e ENV=${ENV} \
+                                             -e password=${PASSWORD} \
+                                             -e server_ip=${IP_Address} \
+                                             -e user=${UserName} \
+                                             -e workspace=${WORKSPACE}             
+                        """
+                    }
+                }
+            }
+        }
+        stage ('Configure Common Server') {
+            steps {
+                script {
+                    withCredentials([password(credentialsId: 'Password', variable: 'PASSWORD')]) {
+                        sh """#!/bin/sh -l
+                            ansible-playbook ansible/common-server.yml \
+                                            -i ansible/inventory/${ENV}/custom-hosts \
+                                            -e "ansible_sudo_pass=${PASSWORD}" \
+                                            -e docker=${Docker} \
+                                            -e git=${Git} \
+                                            -e nginx=${Nginx} \
+                                            -e apache=${Apache} \
+                                            -e jboss=${Jboss} \
+                                            -e java=${Java} | tee -a result-logs-${BUILD_NUMBER}.txt
+                         echo "OS: ${OS}" > common-server-result-${BUILD_NUMBER}.txt
+                         echo "Enviroments: ${ENV}" >> common-server-result-${BUILD_NUMBER}.txt
+                         echo "Server_Name: ${Server_Name}" >> common-server-result-${BUILD_NUMBER}.txt
+                         echo "IP_Address: ${IP_Address}" >> common-server-result-${BUILD_NUMBER}.txt
+                         grep -A99 "PLAY RECAP" result-logs-${BUILD_NUMBER}.txt >> common-server-result-${BUILD_NUMBER}.txt
+                        """
+                        // Send result logs to Telegram
+                        sh """
+                            curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendDocument" \
+                            -F chat_id=${TELEGRAM_GROUP_ID} \
+                            -F document=@${WORKSPACE}/result-logs-${BUILD_NUMBER}.txt \
+                            -F caption="Result Logs Report attached for Build #${BUILD_NUMBER}"
+                        """
+                        sh """
+                            curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendDocument" \
+                            -F chat_id=${TELEGRAM_GROUP_ID} \
+                            -F document=@${WORKSPACE}/common-server-result-${BUILD_NUMBER}.txt \
+                            -F caption="Result Report attached for Build #${BUILD_NUMBER}"
+                        """
+                    }
+                }
+            }
+        }
+        stage ('Add Host') {
+            steps {
+                script {
+                    withCredentials([password(credentialsId: 'Password', variable: 'PASSWORD')]) {
+                        sh """#!/bin/sh -l
+                            ansible-playbook ansible/add-host.yml \
+                                             -i ansible/inventory/${ENV}/hosts \
+                                             -e ENV=${ENV} \
+                                             -e OS=${OS} \
+                                             -e server_name=${Server_Name} \
+                                             -e server_ip=${IP_Address} \
+                                             -e user=${UserName} \
+                                             -e password=${PASSWORD} \
+                                             -e workspace=${WORKSPACE}
+                        """
+                    }
+                }
+            }
+        }
+    }
+}
